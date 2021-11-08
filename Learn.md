@@ -4,91 +4,65 @@ An error will undo all changes made to the state during a transaction.
 
 You can throw an error by calling `require`, `revert` or `assert`.
 
-- `require` is used to validate inputs and conditions before execution.
-- `revert` is similar to `require`. See the code below for details.
-- `assert` is used to check for code that should never be false. Failing assertion probably means that there is a bug.
+## require
 
-Use custom error to save gas.
+- `require` is used to validate inputs, conditions before execution and return values from calls to other functions.
+
+Write this function which throws an error if the input is not greater than 10.
 
 ```
-    // SPDX-License-Identifier: MIT
-    pragma solidity ^0.8.3;
+    function testRequire(uint _i) public pure {
+        require(_i > 10, "Input must be greater than 10");
+    }
+```
 
-    contract Error {
-        function testRequire(uint _i) public pure {
-            // Require should be used to validate conditions such as:
-            // - inputs
-            // - conditions before execution
-            // - return values from calls to other functions
-            require(_i > 10, "Input must be greater than 10");
-        }
+Hit `Run` to test if the error is thrown or not.
 
-        function testRevert(uint _i) public pure {
-            // Revert is useful when the condition to check is complex.
-            // This code does the exact same thing as the example above
-            if (_i <= 10) {
-                revert("Input must be greater than 10");
-            }
-        }
+## revert
 
-        uint public num;
+- `revert` is similar to `require`.
+- `revert` is useful when the condition to check is complex
 
-        function testAssert() public view {
-            // Assert should only be used to test for internal errors,
-            // and to check invariants.
+This function does same thing as before:
 
-            // Here we assert that num is always equal to 0
-            // since it is impossible to update the value of num
-            assert(num == 0);
-        }
-
-        // custom error
-        error InsufficientBalance(uint balance, uint withdrawAmount);
-
-        function testCustomError(uint _withdrawAmount) public view {
-            uint bal = address(this).balance;
-            if (bal < _withdrawAmount) {
-                revert InsufficientBalance({balance: bal, withdrawAmount: _withdrawAmount});
-            }
+```
+    function testRevert(uint _i) public pure {
+        if (_i <= 10) {
+            revert("Input must be greater than 10");
         }
     }
 ```
 
-Here is another example
+Hit `Run` to test if the error is thrown or not.
+
+## assert
+
+- `assert` is used to check for code that should never be false. Failing assertion probably means that there is a bug.
+- `assert` should only be used to test for internal errors and to check invariants.
+
+Let's write a function to test assert:
+
+- Here we assert that num is always equal to 0 since it is impossible to update the value of num here
 
 ```
-    // SPDX-License-Identifier: MIT
-    pragma solidity ^0.8.3;
+    uint public num;
 
-    contract Account {
-        uint public balance;
-        uint public constant MAX_UINT = 2**256 - 1;
+    function testAssert() public view {
+        assert(num == 0);
+    }
+```
 
-        function deposit(uint _amount) public {
-            uint oldBalance = balance;
-            uint newBalance = balance + _amount;
+## Custom error
 
-            // balance + _amount does not overflow if balance + _amount >= balance
-            require(newBalance >= oldBalance, "Overflow");
+We can use custom error to save gas.
 
-            balance = newBalance;
+```
+    error InsufficientBalance(uint balance, uint withdrawAmount);
 
-            assert(balance >= oldBalance);
-        }
-
-        function withdraw(uint _amount) public {
-            uint oldBalance = balance;
-
-            // balance - _amount does not underflow if balance >= _amount
-            require(balance >= _amount, "Underflow");
-
-            if (balance < _amount) {
-                revert("Underflow");
-            }
-
-            balance -= _amount;
-
-            assert(balance <= oldBalance);
+    function testCustomError(uint _withdrawAmount) public view {
+        uint bal = address(this).balance;
+        if (bal < _withdrawAmount) {
+            revert InsufficientBalance({balance: bal, withdrawAmount: _withdrawAmount});
         }
     }
 ```
