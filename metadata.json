@@ -2,12 +2,25 @@
   "version": "1.0.0",
   "defaultFile": "contracts/Error.sol",
   "environment": "solidity",
-  "setupCommands": ["npm i", "npx hardhat compile"],
+  "setupCommands": [
+    "npx hardhat compile"
+  ],
   "compileCommand": "npx hardhat compile",
   "tests": [
-    { "itShould": "Compile", "command": "sh learn_tests/51.sh" },
-    { "itShould": "Call testRequire", "command": "sh learn_tests/52.sh" },
-    { "itShould": "Call testRevert", "command": "sh learn_tests/53.sh" }
+    {
+      "itShould": "Compile",
+      "command": "sh learn_tests/51.sh"
+    },
+    {
+      "itShould": "Call testRequire",
+      "command": "sh learn_tests/52.sh"
+    },
+    {
+      "itShould": "Call testRevert",
+      "command": "sh learn_tests/53.sh"
+    }
   ],
-  "learnerAccessibleFileList": ["contracts/*"]
+  "learnerAccessibleFileList": [
+    "contracts/*"
+  ]
 }
